@@ -26,18 +26,46 @@ public class MyBST<Ttype> {
 			throw new Exception("Koks ir pilns un nevar vairs pievienot jaunus elementus");
 		}
 		
-		addHelper(rootNode, element);
+		//ja koks tuks ieliekam pirmo ka root
+		if(isEmpty()) {
+			MyNode<Ttype> newNode = new MyNode<Ttype>(element);
+			rootNode = newNode;
+		}
+		else {
+			addHelper(rootNode, element);
+		}
 		howManyElements++;
 		
 	}
 	
 	private void addHelper(MyNode<Ttype> nodeTemp, Ttype element) {
 		if(nodeTemp!=null) {
+			//parbauda uz kuru pusi elements japarvieto
+			//ja lielaks, novietosies pa labi
 			if( ((Comparable)element).compareTo(nodeTemp.getElement()) > 0 ) {
-				addHelper(nodeTemp.getRightChNode(), element);;
+				
+				if(nodeTemp.getRightChNode()==null) {
+					 MyNode<Ttype> newNode = new MyNode<Ttype>(element);
+					 newNode.setParentNode(nodeTemp);
+					 nodeTemp.setRightChNode(newNode);
+				}
+				else {
+				addHelper(nodeTemp.getRightChNode(), element);
+				}
+				
 			}
-			else {
-				addHelper(nodeTemp.getLeftChNode(), element);
+			else {//ja mazaks, movietosies pa kreisi
+				
+				//ja kreisa puse nav node
+				if(nodeTemp.getLeftChNode()==null) {
+					MyNode<Ttype> newNode = new MyNode<Ttype>(element);
+					newNode.setParentNode(nodeTemp);
+					nodeTemp.setLeftChNode(newNode);
+				}
+				else {
+					addHelper(nodeTemp.getLeftChNode(), element);
+
+				}
 			}
 		}
 	}
