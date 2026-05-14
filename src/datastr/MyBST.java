@@ -3,76 +3,82 @@ package datastr;
 public class MyBST<Ttype> {
 	private MyNode<Ttype> rootNode = null;
 	private int howManyElements = 0;
-	
+
 	public int getHowManyElements() {
 		return howManyElements;
 	}
-	
+
+	//bezargumenta konstruktors būs no Object klases
+
 	public boolean isEmpty() {
 		return (howManyElements == 0);
 	}
 
 	public boolean isFull() {
-		try {
+		try
+		{
 			new MyNode<Character>('A');
 			return false;
-		} catch (OutOfMemoryError e) {
+		}
+		catch (OutOfMemoryError error) {
 			return true;
 		}
 	}
-	
-	public void add(Ttype element) throws Exception{
+
+
+	public void add(Ttype element) throws Exception {
 		if(isFull()) {
 			throw new Exception("Koks ir pilns un nevar vairs pievienot jaunus elementus");
 		}
-		
-		//ja koks tuks ieliekam pirmo ka root
+
+		//koks ir tukšs, tad ieliekam pirmo kā root
 		if(isEmpty()) {
 			MyNode<Ttype> newNode = new MyNode<Ttype>(element);
 			rootNode = newNode;
 		}
-		else {
+		else
+		{
 			addHelper(rootNode, element);
 		}
 		howManyElements++;
-		
 	}
-	
+
 	private void addHelper(MyNode<Ttype> nodeTemp, Ttype element) {
-		if(nodeTemp!=null) {
-			//parbauda uz kuru pusi elements japarvieto
-			//ja lielaks, novietosies pa labi
-			if( ((Comparable)element).compareTo(nodeTemp.getElement()) > 0 ) {
-				
-				if(nodeTemp.getRightChNode()==null) {
-					 MyNode<Ttype> newNode = new MyNode<Ttype>(element);
-					 newNode.setParentNode(nodeTemp);
-					 nodeTemp.setRightChNode(newNode);
+		if(nodeTemp != null) {
+			//parbaudam, uz kuru pusi elements jaāpārvieto
+			//ja lielāks, tad pa labi
+			if(((Comparable)element).compareTo(nodeTemp.getElement()) > 0) {
+				//ja laba puse nekā nav, tad var ievieot jauno bloku
+				if(nodeTemp.getRightChNode() == null) {
+					MyNode<Ttype> newNode = new MyNode<Ttype>(element);
+					newNode.setParentNode(nodeTemp);
+					nodeTemp.setRightChNode(newNode);
 				}
-				else {
-				addHelper(nodeTemp.getRightChNode(), element);
+				else
+				{
+					addHelper(nodeTemp.getRightChNode(), element);
 				}
-				
 			}
-			else {//ja mazaks, movietosies pa kreisi
-				
-				//ja kreisa puse nav node
-				if(nodeTemp.getLeftChNode()==null) {
+			else//ja mazaks, tad pa kreisi
+			{
+				//ja kreisā pusē nekā nav
+				if(nodeTemp.getLeftChNode() == null) {
 					MyNode<Ttype> newNode = new MyNode<Ttype>(element);
 					newNode.setParentNode(nodeTemp);
 					nodeTemp.setLeftChNode(newNode);
 				}
-				else {
+				else//kreisajā puse jau ir kāds bloks un tāpēc jāizsauc uz kreiso pusi sī pati funkcija
+				{
 					addHelper(nodeTemp.getLeftChNode(), element);
-
 				}
 			}
+
 		}
 	}
-	
+
 	public void print() throws Exception {
 		if (isEmpty()) {
-			throw new Exception("Kaudze ir tukša un to nevar izprintēt");
+			throw new Exception("BST ir tukšs un to nevar izprintēt");
 		}
 
 		printHelper(rootNode);
@@ -96,5 +102,53 @@ public class MyBST<Ttype> {
 			}
 		}
 	}
-}
 
+	public boolean search(Ttype element) throws Exception{
+		if (isEmpty()) {
+			throw new Exception("BST ir tukšs un tajā nevar meklēt elementus");
+		}
+
+		return searchHelper(rootNode, element);
+	}
+
+	private boolean searchHelper(MyNode<Ttype> nodeTemp, Ttype element) {
+		if(nodeTemp!=null) {
+			//Ja sakrīt, tad atgriežam, ka ir atrasts
+			if(nodeTemp.getElement().equals(element)) {
+				return true;
+			}
+			else //ja nesakrīt, tad turpinam meklēt
+			{
+				//meklēšana notiks pa labo pusi
+				if(((Comparable)element).compareTo(nodeTemp.getElement()) > 0) {
+					//labais berns nemaz neeksistē
+					if(nodeTemp.getRightChNode()==null)
+					{
+						//tads elements nav atrodams un atgriežam false
+						return false;
+					}
+					else
+					{		
+						return searchHelper(nodeTemp.getRightChNode(), element);
+					}
+				}
+				else//meklēšanu jāmeklē pa kreiso pusi
+				{
+					//ja kreisais berns eneeksistē, tad elements tur arī nebūs un būs false
+					if(nodeTemp.getLeftChNode() == null) {
+						return false;
+					}
+					else
+					{
+						return searchHelper(nodeTemp.getLeftChNode(), element);
+					}
+				}
+			}
+
+
+		}
+
+		return false;
+	}
+
+}
